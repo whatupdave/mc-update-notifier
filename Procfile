@@ -1,1 +1,1 @@
-check: bin/check
+check: check
