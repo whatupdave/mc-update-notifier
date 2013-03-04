@@ -1,0 +1,17 @@
+#!/bin/bash
+
+old_etag=$(curl --silent http://api.openkeyval.org/minecraft-etag)
+new_etag=$(curl --silent --head https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar | grep ETag | awk -F\" '{print $2}')
+
+if [ $old_etag != $new_etag ]; then
+  echo "event=updated old=$old_etag new=$new_etag"
+  curl --silent -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_USER/SMS/Messages.json \
+      -u $TWILIO_USER:$TWILIO_PASS \
+      -d "From=$SMS_FROM" \
+      -d "To=$SMS_TO" \
+      -d 'Body=Minecraft server updated!' > /dev/null
+      
+  curl -d "minecraft-etag=$new_etag" --silent http://api.openkeyval.org > /dev/null
+else
+  echo "event=check etag=$new_etag"
+fi
