@@ -8,11 +8,11 @@ if [ $old_etag != $new_etag ]; then
   curl --silent -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_USER/Calls.json \
       -u $TWILIO_USER:$TWILIO_PASS \
       -d "Url=https://raw.github.com/whatupdave/mc-update-notifier/master/message.xml" \
+      -d "Method=GET" \
       -d "From=$SMS_FROM" \
-      -d "To=$SMS_TO" \
-      -d 'Body=Minecraft server updated!' > /dev/null
+      -d "To=$SMS_TO"
       
-  curl -d "minecraft-etag=$new_etag" --silent http://api.openkeyval.org > /dev/null
+  curl -d "$ETAG_KEY=$new_etag" --silent http://api.openkeyval.org
 else
   echo "event=check etag=$new_etag"
 fi
